@@ -1,4 +1,15 @@
+import json
+import os
+import random
+import sys
+
+# Windows 콘솔에서 이모지 출력 시 발생하는 cp949 인코딩 오류 방지
+sys.stdout.reconfigure(encoding='utf-8')
+
+
 class Quiz:
+    """퀴즈 1개(문제/선택지/정답)를 표현하는 클래스."""
+
     def __init__(self, question, choices, answer):
         self.question = question
         self.choices = choices
@@ -23,15 +34,10 @@ class Quiz:
     def from_dict(cls, data):
         return cls(data["question"], data["choices"], data["answer"])
 
-import json
-import os
-import random
-import sys
-
-# Windows 콘솔에서 이모지 출력 시 발생하는 cp949 인코딩 오류 방지
-sys.stdout.reconfigure(encoding='utf-8')
 
 class QuizGame:
+    """퀴즈 게임 전체(메뉴, 진행, 저장/불러오기)를 관리하는 클래스."""
+
     FILE_PATH = "state.json"
 
     def __init__(self):
@@ -108,7 +114,7 @@ class QuizGame:
             try:
                 self.display_menu()
                 choice = self.get_input("선택: ", range(1, 6))
-                
+
                 if choice == 1:
                     self.play_quiz()
                 elif choice == 2:
@@ -134,24 +140,24 @@ class QuizGame:
         print(f"\n📝 퀴즈를 시작합니다! (총 {len(self.quizzes)}문제)")
         quiz_list = self.quizzes.copy()
         random.shuffle(quiz_list)
-        
+
         score = 0
         try:
             for i, quiz in enumerate(quiz_list, 1):
                 print(f"\n[문제 {i}]")
                 quiz.display()
                 user_answer = self.get_input("정답 입력 (1-4): ", range(1, 5))
-                
+
                 if quiz.check_answer(user_answer):
                     print("✅ 정답입니다!")
                     score += 1
                 else:
                     print(f"❌ 오답입니다. 정답은 {quiz.answer}번입니다.")
-            
+
             score_percentage = int((score / len(quiz_list)) * 100)
             print("\n========================================")
             print(f"🏆 결과: {len(quiz_list)}문제 중 {score}문제 정답! ({score_percentage}점)")
-            
+
             if score_percentage > self.best_score:
                 print("🎉 새로운 최고 점수입니다!")
                 self.best_score = score_percentage
@@ -175,9 +181,9 @@ class QuizGame:
                     print("⚠️ 빈 입력은 허용되지 않습니다.")
                     return
                 choices.append(choice)
-            
+
             answer = self.get_input("정답 번호 (1-4): ", range(1, 5))
-            
+
             new_quiz = Quiz(question, choices, answer)
             self.quizzes.append(new_quiz)
             self.save_data()
@@ -190,13 +196,15 @@ class QuizGame:
         if not self.quizzes:
             print("등록된 퀴즈가 없습니다.")
             return
-        
+
         for i, quiz in enumerate(self.quizzes, 1):
             print(f"[{i}] {quiz.question}")
+
     def show_score(self):
         print("\n========================================")
         print(f"🏆 최고 점수: {self.best_score}점")
         print("========================================")
+
 
 if __name__ == "__main__":
     game = QuizGame()
