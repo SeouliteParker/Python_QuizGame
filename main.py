@@ -26,6 +26,10 @@ class Quiz:
 import json
 import os
 import random
+import sys
+
+# Windows 콘솔에서 이모지 출력 시 발생하는 cp949 인코딩 오류 방지
+sys.stdout.reconfigure(encoding='utf-8')
 
 class QuizGame:
     FILE_PATH = "state.json"
