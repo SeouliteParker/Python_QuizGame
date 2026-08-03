@@ -71,6 +71,69 @@ class QuizGame:
         except IOError:
             print("⚠️ 데이터 저장에 실패했습니다.")
 
+    def display_menu(self):
+        print("\n========================================")
+        print("🎯 나만의 파이썬 퀴즈 게임 🎯")
+        print("========================================")
+        print("1. 퀴즈 풀기")
+        print("2. 퀴즈 추가")
+        print("3. 퀴즈 목록")
+        print("4. 점수 확인")
+        print("5. 종료")
+        print("========================================")
+
+    def get_input(self, prompt, valid_range=None):
+        while True:
+            try:
+                user_input = input(prompt).strip()
+                if not user_input:
+                    print("⚠️ 빈 입력입니다. 다시 입력해주세요.")
+                    continue
+                num = int(user_input)
+                if valid_range and num not in valid_range:
+                    print(f"⚠️ 허용된 범위({valid_range[0]}~{valid_range[-1]})의 숫자를 입력해주세요.")
+                    continue
+                return num
+            except ValueError:
+                print("⚠️ 잘못된 입력입니다. 숫자를 입력해주세요.")
+
+    def run(self):
+        print(f"📂 저장된 데이터를 불러왔습니다. (퀴즈 {len(self.quizzes)}개, 최고점수 {self.best_score}점)")
+        while True:
+            try:
+                self.display_menu()
+                choice = self.get_input("선택: ", range(1, 6))
+                
+                if choice == 1:
+                    self.play_quiz()
+                elif choice == 2:
+                    self.add_quiz()
+                elif choice == 3:
+                    self.list_quizzes()
+                elif choice == 4:
+                    self.show_score()
+                elif choice == 5:
+                    print("👋 프로그램을 종료합니다. (데이터 저장 완료)")
+                    self.save_data()
+                    break
+            except (KeyboardInterrupt, EOFError):
+                print("\n⚠️ 프로그램이 비정상 종료 요청을 받았습니다. 안전하게 종료합니다.")
+                self.save_data()
+                break
+
+    def play_quiz(self):
+        print("공사중...")
+
+    def add_quiz(self):
+        print("공사중...")
+
+    def list_quizzes(self):
+        print("공사중...")
+
+    def show_score(self):
+        print("공사중...")
+
+
 if __name__ == "__main__":
     game = QuizGame()
-    game.save_data()
+    game.run()
