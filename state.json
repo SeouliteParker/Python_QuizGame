@@ -350,6 +350,156 @@
                 "continue"
             ],
             "answer": 4
+        },
+        {
+            "question": "객체 지향 프로그래밍(OOP)의 주요 특징이 아닌 것은?",
+            "choices": [
+                "캡슐화(Encapsulation)",
+                "상속성(Inheritance)",
+                "다형성(Polymorphism)",
+                "절차성(Procedural)"
+            ],
+            "answer": 4
+        },
+        {
+            "question": "파이썬에서 기본적으로 사용되는 내장 정렬 알고리즘의 이름은?",
+            "choices": [
+                "Quick sort",
+                "Merge sort",
+                "Timsort",
+                "Bubble sort"
+            ],
+            "answer": 3
+        },
+        {
+            "question": "여러 개의 반복 가능한(iterable) 객체들을 동일한 인덱스끼리 묶어주는 파이썬 내장 함수는?",
+            "choices": [
+                "bind()",
+                "zip()",
+                "combine()",
+                "merge()"
+            ],
+            "answer": 2
+        },
+        {
+            "question": "주어진 함수 결과가 참인 요소들만 걸러내는(반환하는) 내장 함수는?",
+            "choices": [
+                "filter()",
+                "select()",
+                "extract()",
+                "find()"
+            ],
+            "answer": 1
+        },
+        {
+            "question": "반복 가능한 객체의 모든 요소에 특정 함수를 적용하여 반환하는 내장 함수는?",
+            "choices": [
+                "apply()",
+                "map()",
+                "foreach()",
+                "transform()"
+            ],
+            "answer": 2
+        },
+        {
+            "question": "문자열을 특정 구분자를 기준으로 나누어 리스트로 반환하는 문자열 메서드는?",
+            "choices": [
+                "divide()",
+                "slice()",
+                "cut()",
+                "split()"
+            ],
+            "answer": 4
+        },
+        {
+            "question": "파이썬의 변수 스코프(유효 범위) 규칙인 LEGB 룰에서 'G'는 무엇을 의미하는가?",
+            "choices": [
+                "General",
+                "Generator",
+                "Global",
+                "Group"
+            ],
+            "answer": 3
+        },
+        {
+            "question": "디버깅이나 코드 테스트 시 특정 조건이 참인지 검사하고, 거짓이면 예외를 발생시키는 키워드는?",
+            "choices": [
+                "check",
+                "assert",
+                "verify",
+                "ensure"
+            ],
+            "answer": 2
+        },
+        {
+            "question": "파일 입출력 등에서 사용이 끝나면 자동으로 리소스를 해제(close)해주는 편리한 구문은?",
+            "choices": [
+                "with ~ as",
+                "try ~ finally",
+                "open ~ auto",
+                "use ~ close"
+            ],
+            "answer": 1
+        },
+        {
+            "question": "파이썬의 리스트 컴프리헨션(List Comprehension)의 가장 올바른 기본 문법 구조는?",
+            "choices": [
+                "{x in iter: x}",
+                "[x for x in iter]",
+                "(for x in iter -> x)",
+                "<x | x in iter>"
+            ],
+            "answer": 2
+        },
+        {
+            "question": "리스트 등의 요소를 순회할 때, 인덱스 번호와 값을 함께 튜플 형태로 묶어주는 함수는?",
+            "choices": [
+                "index()",
+                "count()",
+                "enumerate()",
+                "list()"
+            ],
+            "answer": 3
+        },
+        {
+            "question": "객체의 특정 속성(attribute)을 삭제할 때 사용하는 파이썬 내장 함수나 키워드는?",
+            "choices": [
+                "remove()",
+                "del",
+                "discard",
+                "erase()"
+            ],
+            "answer": 2
+        },
+        {
+            "question": "파이썬 파일이 모듈로 임포트되지 않고 직접 실행되었을 때, `__name__` 변수에 저장되는 문자열 값은?",
+            "choices": [
+                "__self__",
+                "__init__",
+                "__main__",
+                "__file__"
+            ],
+            "answer": 3
+        },
+        {
+            "question": "파이썬의 표준 패키지(라이브러리) 관리자(설치 도구)의 이름은?",
+            "choices": [
+                "npm",
+                "pip",
+                "apt",
+                "gem"
+            ],
+            "answer": 2
+        },
+        {
+            "question": "딕셔너리(dict)에 여러 개의 키-값 쌍을 한 번에 추가하거나 병합(업데이트)할 때 사용하는 메서드는?",
+            "choices": [
+                "append()",
+                "extend()",
+                "update()",
+                "add()"
+            ],
+            "answer": 3
         }
     ]
 }
