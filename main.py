@@ -25,6 +25,7 @@ class Quiz:
 
 import json
 import os
+import random
 
 class QuizGame:
     FILE_PATH = "state.json"
@@ -122,7 +123,38 @@ class QuizGame:
                 break
 
     def play_quiz(self):
-        print("공사중...")
+        if not self.quizzes:
+            print("⚠️ 등록된 퀴즈가 없습니다. 퀴즈를 먼저 추가해주세요.")
+            return
+
+        print(f"\n📝 퀴즈를 시작합니다! (총 {len(self.quizzes)}문제)")
+        quiz_list = self.quizzes.copy()
+        random.shuffle(quiz_list)
+        
+        score = 0
+        try:
+            for i, quiz in enumerate(quiz_list, 1):
+                print(f"\n[문제 {i}]")
+                quiz.display()
+                user_answer = self.get_input("정답 입력 (1-4): ", range(1, 5))
+                
+                if quiz.check_answer(user_answer):
+                    print("✅ 정답입니다!")
+                    score += 1
+                else:
+                    print(f"❌ 오답입니다. 정답은 {quiz.answer}번입니다.")
+            
+            score_percentage = int((score / len(quiz_list)) * 100)
+            print("\n========================================")
+            print(f"🏆 결과: {len(quiz_list)}문제 중 {score}문제 정답! ({score_percentage}점)")
+            
+            if score_percentage > self.best_score:
+                print("🎉 새로운 최고 점수입니다!")
+                self.best_score = score_percentage
+                self.save_data()
+            print("========================================")
+        except (KeyboardInterrupt, EOFError):
+            print("\n⚠️ 퀴즈 풀이가 중단되었습니다.")
 
     def add_quiz(self):
         print("\n📌 새로운 퀴즈를 추가합니다.")
@@ -158,8 +190,9 @@ class QuizGame:
         for i, quiz in enumerate(self.quizzes, 1):
             print(f"[{i}] {quiz.question}")
     def show_score(self):
-        print("공사중...")
-
+        print("\n========================================")
+        print(f"🏆 최고 점수: {self.best_score}점")
+        print("========================================")
 
 if __name__ == "__main__":
     game = QuizGame()
