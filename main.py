@@ -125,11 +125,38 @@ class QuizGame:
         print("공사중...")
 
     def add_quiz(self):
-        print("공사중...")
+        print("\n📌 새로운 퀴즈를 추가합니다.")
+        try:
+            question = input("문제를 입력하세요: ").strip()
+            if not question:
+                print("⚠️ 빈 입력은 허용되지 않습니다.")
+                return
+
+            choices = []
+            for i in range(4):
+                choice = input(f"선택지 {i+1}: ").strip()
+                if not choice:
+                    print("⚠️ 빈 입력은 허용되지 않습니다.")
+                    return
+                choices.append(choice)
+            
+            answer = self.get_input("정답 번호 (1-4): ", range(1, 5))
+            
+            new_quiz = Quiz(question, choices, answer)
+            self.quizzes.append(new_quiz)
+            self.save_data()
+            print("✅ 퀴즈가 성공적으로 추가되었습니다!")
+        except (KeyboardInterrupt, EOFError):
+            print("\n⚠️ 퀴즈 추가가 취소되었습니다.")
 
     def list_quizzes(self):
-        print("공사중...")
-
+        print(f"\n📋 등록된 퀴즈 목록 (총 {len(self.quizzes)}개)")
+        if not self.quizzes:
+            print("등록된 퀴즈가 없습니다.")
+            return
+        
+        for i, quiz in enumerate(self.quizzes, 1):
+            print(f"[{i}] {quiz.question}")
     def show_score(self):
         print("공사중...")
 
