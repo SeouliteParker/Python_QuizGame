@@ -225,7 +225,10 @@ class QuizGame:
 
     def show_score(self):
         print("\n========================================")
-        print(f"🏆 최고 점수: {self.best_score}점")
+        if not self.history:
+            print("🏆 아직 퀴즈를 푼 기록이 없습니다. 먼저 퀴즈를 풀어보세요!")
+        else:
+            print(f"🏆 최고 점수: {self.best_score}점")
         print("========================================")
 
     def show_history(self):
