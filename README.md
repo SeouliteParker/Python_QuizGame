@@ -211,3 +211,71 @@ Python_QuizGame/
 **`state.json`이 손상되어 파싱에 실패한다면?**: 현재 코드는 `json.JSONDecodeError` 발생 시 기본 퀴즈 5개로 초기화하는 방식으로만 대응함(`load_data()`) — 프로그램이 죽지 않는 것은 보장하지만, 손상 직전까지 쌓아둔 사용자 데이터는 복구하지 못함. 데이터를 잃지 않으려면 ① 저장할 때마다 기존 파일을 `state.json.bak`으로 함께 남겨두고 손상 시 백업에서 복구하거나, ② 손상된 파일을 곧바로 기본값으로 덮어쓰지 않고 `state.json.corrupted`처럼 이름을 바꿔 보존해 사용자가 나중에 직접 복구를 시도할 수 있게 하는 방법이 있음. 지금 구현은 "계속 실행되는 것"까지만 보장하고 "복구"까지는 안 되어 있어, 실제로 개선이 필요한 지점으로 남겨둠.
 
 **채점 방식이나 퀴즈 구조(선택지 개수 등) 요구사항이 바뀐다면?**: 정답 채점 로직은 `Quiz.check_answer()` 한 곳에만 있어서, 예를 들어 "부분 점수"를 주는 방식으로 바뀌면 이 메서드만 고치면 됨. 선택지 개수(현재 4개 고정)를 바꾸려면 `add_quiz()`의 `for i in range(4)` 부분과, 정답 번호 유효 범위를 검사하는 `get_input(..., range(1, 5))` 호출 두 곳을 함께 고쳐야 함. `Quiz` 클래스 자체는 `choices`를 리스트로만 다룰 뿐 개수에 의존하지 않으므로 `Quiz` 클래스는 그대로 두어도 됨.g
+
+## 13. Git 기초 명령어 실습 (init / add / commit)
+
+**커밋을 생성 했다는 증거**
+zukrass3800@c5r6s7 Python_QuizGame_New % git init
+hint: Using 'master' as the name for the initial branch. This default branch name
+hint: will change to "main" in Git 3.0. To configure the initial branch name
+hint: to use in all of your new repositories, which will suppress this warning,
+hint: call:
+hint:
+hint:   git config --global init.defaultBranch <name>
+hint:
+hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+hint: 'development'. The just-created branch can be renamed via this command:
+hint:
+hint:   git branch -m <name>
+hint:
+hint: Disable this message with "git config set advice.defaultBranchName false"
+/Users/zukrass3800/Python_QuizGame_New/.git/ 안의 빈 깃 저장소를 다시 초기화했습니다
+zukrass3800@c5r6s7 Python_QuizGame_New % git add .
+zukrass3800@c5r6s7 Python_QuizGame_New % git commit -m "Chore: 프로젝트 초기 구 조 생성"
+[master (최상위-커밋) a20a897] Chore: 프로젝트 초기 구조 생성
+Committer: 박기태 <zukrass3800@c5r6s7.codyssey.kr>
+이름과 전자메일 주소를 사용자 이름과 호스트 이름을 이용해서 자동으로
+설정했습니다. 이 정보가 맞는지 확인하십시오. 이 메시지를 보지 않으려면 정보를
+명시적으로 설정하십시오. 다음 명령어를 실행하고 편집기의 안내에 따라 설정
+파일을 편집하십시오:
+
+
+   git config --global --edit
+
+
+이렇게 한 다음, 이 커밋에 사용한 신원 정보를 다음과 같이 해서 바꿀 수 있습니다:
+
+
+   git commit --amend --reset-author
+
+
+1 file changed, 1 insertion(+)
+create mode 100644 README.md
+zukrass3800@c5r6s7 Python_QuizGame_New % git log --oneline
+a20a897 (HEAD -> master) Chore: 프로젝트 초기 구조 생성
+
+
+
+
+**커밋이 존재한다는 증거**
+zukrass3800@c5r6s7 Python_QuizGame % git log --oneline --graph
+* 367bfa8 (HEAD -> master, origin/master, origin/HEAD) 개발환경설정 스크린샷
+* 6de4ef2 스크린샷 추가
+* 1ab9d7c 기능정리
+* 16b76a4 문서변경
+* 543e383 중첩저장소 제거
+*   1fffd74 Merge branch 'master' of https://github.com/SeouliteParker/Python_QuizGame
+|\ 
+| * d1da824 스크린샷 추가
+* | 896e7f1 파일수정
+|/ 
+* 8cbf1d3 구조 및 내용변경
+* 7efa72b 스크린샷 이미지 추가
+* 439bae7 Feat: 파이썬 관련 퀴즈 15문제 추가 (총 50문제)
+* 4e30163 Feat: 파이썬 관련 퀴즈 30문제 추가
+* c438f36 Fix: Windows 콘솔 이모지 출력 인코딩 오류 수정 (cp949 -> utf-8)
+* 870aa03 Fix: 비정상 종료 시 안전한 상태 저장 보완
+* 202dd83 Feat: 최고 점수 갱신 및 점수 확인 기능 추가
+* 7d37cf1 Feat: 퀴즈 풀기 및 랜덤 셔플 로직 구현
+:
+
