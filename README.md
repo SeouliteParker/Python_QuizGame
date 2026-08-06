@@ -101,7 +101,7 @@ Python_QuizGame/
 - **역할**: 사용자가 추가한 퀴즈 데이터와 최고 점수를 저장해, 프로그램을 종료했다가 다시 실행해도 유지되도록 함(데이터 영속성). 파일이 없으면 기본 퀴즈 데이터를 사용하고, 손상된 경우 `try/except`로 감지해 기본 데이터로 복구함.
 - **인코딩**: UTF-8
 - **필드 구조 (스키마)**:
-  ```json
+```json
   {
       "best_score": 60,
       "quizzes": [
@@ -120,7 +120,7 @@ Python_QuizGame/
           }
       ]
   }
-  ```
+```
   - `best_score`: 지금까지 달성한 최고 점수(정수)
   - `quizzes`: 퀴즈 목록. 각 항목은 `question`(문제), `choices`(선택지 4개 배열), `answer`(정답 번호, 1~4) 필드로 구성됨
   - `history`: 지금까지 플레이한 모든 게임 기록 배열. 각 항목은 `date`(플레이 일시), `total`(푼 문제 수), `score`(정답 문제 수), `percentage`(환산 점수) 필드로 구성됨
@@ -131,20 +131,20 @@ Python_QuizGame/
 - **커밋 단위 기준**: 기능 하나가 "동작 가능한 상태"로 완성될 때마다 커밋함(예: Quiz 클래스 생성 → 기본 퀴즈 데이터 추가 → 저장/불러오기 → 메뉴 UI → 퀴즈 추가/목록 → 퀴즈 풀기 → 점수). 버그 수정은 기능 커밋과 섞지 않고 `Fix:` 커밋으로 따로 분리해, 하나의 커밋이 "무엇을 위해 추가된 것인지" 또는 "무엇을 고친 것인지" 하나의 의미만 갖도록 함.
 - **브랜치 분리 이유**: 퀴즈 풀기·점수 기능은 기존 메뉴/추가/목록 기능과 독립적으로 개발 가능한 단위였기 때문에, `master`를 항상 안정된 상태로 유지하면서 `feature/play-quiz` 브랜치에서 별도로 개발함. 개발 중인 기능이 미완성이어도 `master` 이력에는 영향을 주지 않기 위함.
 - **병합(merge)의 의미**: 분리해서 진행한 브랜치의 커밋 이력을 다시 하나로 합치는 작업. 이번 병합은 `master`가 분기 이후 다른 변경이 없었기 때문에 **Fast-forward**로 처리됨 — 별도의 병합 커밋을 만들지 않고 `master` 포인터를 `feature/play-quiz`가 가리키던 커밋으로 그대로 옮김. [9번 스크린샷](#9-실행-결과-스크린샷)의 `git log --oneline --graph` 결과에서 `(feature/play-quiz)` 라벨이 붙은 커밋이 바로 그 병합 지점임(Fast-forward라 별도 "Merge" 커밋 줄은 없고, 브랜치 라벨이 같은 한 줄에 나란히 붙는 것으로 확인됨).
-  ```bash
+```bash
   git checkout -b feature/play-quiz
   # 퀴즈 풀기 / 점수 기능 개발 및 커밋
   git checkout master
   git merge feature/play-quiz
-  ```
+```
 - **클론(clone)과 원격 동기화(pull) 실습**: `clone`은 원격 저장소 전체를 로컬에 새로 복사해오는 명령이고, `pull`은 이미 로컬에 있는 저장소에 원격의 최신 변경 사항만 받아와 반영하는 명령임 — 이 차이를 직접 확인하기 위해 별도 폴더에 저장소를 새로 내려받고, 원본 작업 폴더에서 커밋·푸시한 변경 사항을 그 복사본에서 `pull`로 받아오는 과정을 실습함.
-  ```bash
+```bash
   # 별도 위치에 저장소를 새로 내려받음
   git clone https://github.com/SeouliteParker/Python_QuizGame.git
 
   # 원본 작업 폴더에서 수정 → 커밋 → 푸시 후, 다른 로컬 복사본에서 반영
   git pull origin master
-  ```
+```
   실제로 `git pull` 실행 결과 `8cbf1d3..d1da824 master -> origin/master`로 Fast-forward 갱신되며 원격에만 있던 커밋(퀴즈 추가 완료 화면 스크린샷)이 로컬로 반영됨을 확인함.
 - **사용한 Git 명령어**: `init`, `add`, `commit`, `push`, `checkout`(브랜치 생성·전환), `merge`, `clone`, `pull`
 
