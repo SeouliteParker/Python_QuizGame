@@ -2,18 +2,20 @@ import json
 import os
 import random
 import sys
+from datetime import datetime
 
 # Windows 콘솔에서 이모지 출력 시 발생하는 cp949 인코딩 오류 방지
 sys.stdout.reconfigure(encoding='utf-8')
 
 
 class Quiz:
-    """퀴즈 1개(문제/선택지/정답)를 표현하는 클래스."""
+    """퀴즈 1개(문제/선택지/정답/힌트)를 표현하는 클래스."""
 
-    def __init__(self, question, choices, answer):
+    def __init__(self, question, choices, answer, hint=""):
         self.question = question
         self.choices = choices
         self.answer = answer
+        self.hint = hint
 
     def display(self):
         print(f"\nQ. {self.question}")
@@ -23,16 +25,20 @@ class Quiz:
     def check_answer(self, user_answer):
         return self.answer == user_answer
 
+    def has_hint(self):
+        return bool(self.hint)
+
     def to_dict(self):
         return {
             "question": self.question,
             "choices": self.choices,
-            "answer": self.answer
+            "answer": self.answer,
+            "hint": self.hint
         }
 
     @classmethod
     def from_dict(cls, data):
-        return cls(data["question"], data["choices"], data["answer"])
+        return cls(data["question"], data["choices"], data["answer"], data.get("hint", ""))
 
 
 class QuizGame:
@@ -43,15 +49,26 @@ class QuizGame:
     def __init__(self):
         self.quizzes = []
         self.best_score = 0
+        self.history = []
         self.load_data()
 
     def get_default_quizzes(self):
         return [
-            Quiz("파이썬에서 리스트의 길이를 구하는 함수는?", ["size()", "length()", "len()", "count()"], 3),
-            Quiz("파이썬의 기본 출력 함수는?", ["print()", "echo()", "write()", "printf()"], 1),
-            Quiz("다음 중 파이썬의 반복문이 아닌 것은?", ["for", "while", "do-while", "이 중 없음"], 3),
-            Quiz("파이썬에서 주석을 작성할 때 사용하는 기호는?", ["//", "/*", "#", "<!--"], 3),
-            Quiz("딕셔너리(dict)에서 키(key)들만 모아서 반환하는 메서드는?", ["keys()", "values()", "items()", "get()"], 1)
+            Quiz("파이썬에서 리스트의 길이를 구하는 함수는?",
+                 ["size()", "length()", "len()", "count()"], 3,
+                 "내장 함수 중 하나이며 문자열 길이를 구할 때도 사용함"),
+            Quiz("파이썬의 기본 출력 함수는?",
+                 ["print()", "echo()", "write()", "printf()"], 1,
+                 "가장 자주 쓰는 기본 함수"),
+            Quiz("다음 중 파이썬의 반복문이 아닌 것은?",
+                 ["for", "while", "do-while", "이 중 없음"], 3,
+                 "파이썬에는 이 문법 자체가 없음"),
+            Quiz("파이썬에서 주석을 작성할 때 사용하는 기호는?",
+                 ["//", "/*", "#", "<!--"], 3,
+                 "한 줄짜리 주석에 사용하는 기호"),
+            Quiz("딕셔너리(dict)에서 키(key)들만 모아서 반환하는 메서드는?",
+                 ["keys()", "values()", "items()", "get()"], 1,
+                 "메서드 이름 그대로의 기능")
         ]
 
     def load_data(self):
@@ -60,6 +77,7 @@ class QuizGame:
                 with open(self.FILE_PATH, "r", encoding="utf-8") as f:
                     data = json.load(f)
                     self.best_score = data.get("best_score", 0)
+                    self.history = data.get("history", [])
                     quizzes_data = data.get("quizzes", [])
                     self.quizzes = [Quiz.from_dict(q) for q in quizzes_data]
                     if not self.quizzes:
@@ -68,13 +86,15 @@ class QuizGame:
                 print("⚠️ 데이터 파일이 손상되었거나 읽을 수 없습니다. 기본 퀴즈를 불러옵니다.")
                 self.quizzes = self.get_default_quizzes()
                 self.best_score = 0
+                self.history = []
         else:
             self.quizzes = self.get_default_quizzes()
 
     def save_data(self):
         data = {
             "best_score": self.best_score,
-            "quizzes": [q.to_dict() for q in self.quizzes]
+            "quizzes": [q.to_dict() for q in self.quizzes],
+            "history": self.history
         }
         try:
             with open(self.FILE_PATH, "w", encoding="utf-8") as f:
@@ -90,7 +110,9 @@ class QuizGame:
         print("2. 퀴즈 추가")
         print("3. 퀴즈 목록")
         print("4. 점수 확인")
-        print("5. 종료")
+        print("5. 퀴즈 삭제")
+        print("6. 점수 기록 히스토리")
+        print("7. 종료")
         print("========================================")
 
     def get_input(self, prompt, valid_range=None):
@@ -113,7 +135,7 @@ class QuizGame:
         while True:
             try:
                 self.display_menu()
-                choice = self.get_input("선택: ", range(1, 6))
+                choice = self.get_input("선택: ", range(1, 8))
 
                 if choice == 1:
                     self.play_quiz()
@@ -124,6 +146,10 @@ class QuizGame:
                 elif choice == 4:
                     self.show_score()
                 elif choice == 5:
+                    self.delete_quiz()
+                elif choice == 6:
+                    self.show_history()
+                elif choice == 7:
                     print("👋 프로그램을 종료합니다. (데이터 저장 완료)")
                     self.save_data()
                     break
@@ -137,31 +163,63 @@ class QuizGame:
             print("⚠️ 등록된 퀴즈가 없습니다. 퀴즈를 먼저 추가해주세요.")
             return
 
-        print(f"\n📝 퀴즈를 시작합니다! (총 {len(self.quizzes)}문제)")
+        max_count = len(self.quizzes)
+        print(f"\n📝 퀴즈를 시작합니다! (등록된 퀴즈 총 {max_count}문제)")
+        try:
+            count = self.get_input(f"몇 문제를 푸시겠어요? (1~{max_count}): ", range(1, max_count + 1))
+        except (KeyboardInterrupt, EOFError):
+            print("\n⚠️ 퀴즈 풀이가 취소되었습니다.")
+            return
+
         quiz_list = self.quizzes.copy()
         random.shuffle(quiz_list)
+        quiz_list = quiz_list[:count]
 
-        score = 0
+        score = 0.0
+        hint_used_count = 0
         try:
             for i, quiz in enumerate(quiz_list, 1):
-                print(f"\n[문제 {i}]")
+                print(f"\n[문제 {i}/{count}]")
                 quiz.display()
+
+                used_hint = False
+                if quiz.has_hint():
+                    want_hint = input("힌트를 볼까요? (y/N): ").strip().lower()
+                    if want_hint == "y":
+                        print(f"💡 힌트: {quiz.hint}")
+                        used_hint = True
+                        hint_used_count += 1
+
                 user_answer = self.get_input("정답 입력 (1-4): ", range(1, 5))
 
                 if quiz.check_answer(user_answer):
-                    print("✅ 정답입니다!")
-                    score += 1
+                    if used_hint:
+                        print("✅ 정답입니다! (힌트 사용 - 0.5점 처리)")
+                        score += 0.5
+                    else:
+                        print("✅ 정답입니다!")
+                        score += 1
                 else:
                     print(f"❌ 오답입니다. 정답은 {quiz.answer}번입니다.")
 
-            score_percentage = int((score / len(quiz_list)) * 100)
+            score_percentage = int((score / count) * 100)
             print("\n========================================")
-            print(f"🏆 결과: {len(quiz_list)}문제 중 {score}문제 정답! ({score_percentage}점)")
+            print(f"🏆 결과: {count}문제 중 {score:g}문제 정답! ({score_percentage}점)")
+            if hint_used_count:
+                print(f"💡 힌트 사용: {hint_used_count}회")
 
             if score_percentage > self.best_score:
                 print("🎉 새로운 최고 점수입니다!")
                 self.best_score = score_percentage
-                self.save_data()
+
+            self.history.append({
+                "date": datetime.now().strftime("%Y-%m-%d %H:%M"),
+                "total": count,
+                "score": score,
+                "percentage": score_percentage,
+                "hint_used": hint_used_count
+            })
+            self.save_data()
             print("========================================")
         except (KeyboardInterrupt, EOFError):
             print("\n⚠️ 퀴즈 풀이가 중단되었습니다.")
@@ -183,8 +241,9 @@ class QuizGame:
                 choices.append(choice)
 
             answer = self.get_input("정답 번호 (1-4): ", range(1, 5))
+            hint = input("힌트 (선택 사항, 없으면 그냥 Enter): ").strip()
 
-            new_quiz = Quiz(question, choices, answer)
+            new_quiz = Quiz(question, choices, answer, hint)
             self.quizzes.append(new_quiz)
             self.save_data()
             print("✅ 퀴즈가 성공적으로 추가되었습니다!")
@@ -198,12 +257,40 @@ class QuizGame:
             return
 
         for i, quiz in enumerate(self.quizzes, 1):
-            print(f"[{i}] {quiz.question}")
+            hint_mark = " 💡" if quiz.has_hint() else ""
+            print(f"[{i}] {quiz.question}{hint_mark}")
+
+    def delete_quiz(self):
+        if not self.quizzes:
+            print("⚠️ 등록된 퀴즈가 없습니다.")
+            return
+
+        self.list_quizzes()
+        try:
+            index = self.get_input(f"삭제할 퀴즈 번호 (1-{len(self.quizzes)}): ", range(1, len(self.quizzes) + 1))
+            removed = self.quizzes.pop(index - 1)
+            self.save_data()
+            print(f"🗑️ 삭제되었습니다: {removed.question}")
+        except (KeyboardInterrupt, EOFError):
+            print("\n⚠️ 퀴즈 삭제가 취소되었습니다.")
 
     def show_score(self):
         print("\n========================================")
         print(f"🏆 최고 점수: {self.best_score}점")
         print("========================================")
+
+    def show_history(self):
+        print(f"\n📜 점수 기록 히스토리 (총 {len(self.history)}회)")
+        if not self.history:
+            print("아직 퀴즈를 푼 기록이 없습니다.")
+            return
+
+        print("----------------------------------------")
+        for i, record in enumerate(self.history, 1):
+            hint_note = f", 힌트 {record.get('hint_used', 0)}회" if record.get('hint_used') else ""
+            print(f"[{i}] {record['date']} - {record['total']}문제 중 {record['score']:g}문제 정답 "
+                  f"({record['percentage']}점){hint_note}")
+        print("----------------------------------------")
 
 
 if __name__ == "__main__":
